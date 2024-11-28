@@ -1,0 +1,12 @@
+.task-list-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
+
+.task-list {
+  width: 80%;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}

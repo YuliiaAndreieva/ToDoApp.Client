@@ -1,0 +1,10 @@
+@import 'src/assets/sass/_variables.colors.scss';
+
+.header {
+  background-color: $light-pink-color;
+  color: $dark-pink-color;
+  padding: 10px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: bold;
+}
