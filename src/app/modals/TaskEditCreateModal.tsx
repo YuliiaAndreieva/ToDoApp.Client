@@ -1,10 +1,12 @@
 import React from "react";
-import {Modal, Input, DatePicker} from "antd";
+import {Input, DatePicker} from "antd";
 import { Task as TaskType } from "../../models/task.model";
+import {BaseModal} from "./BaseModal";
+import dayjs from "dayjs";
 
 interface TaskEditCreateModalProps {
     isOpen: boolean;
-    task: TaskType | null;
+    task: TaskType;
     isEditMode: boolean;
     onSave: () => void;
     onCancel: () => void;
@@ -22,13 +24,13 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
     if (!task) return null;
 
     return (
-        <Modal
+        <BaseModal
             title={isEditMode ? "Edit Task" : "Create Task"}
-            open={isOpen}
+            isOpen={isOpen}
             onOk={onSave}
             onCancel={onCancel}
             okText={isEditMode ? "Save Changes" : "Create"}
-        >
+            okType={"primary"}>
             <Input
                 placeholder="Task Name"
                 value={task.name}
@@ -47,12 +49,17 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
             />
             <DatePicker
                 placeholder="Select Due Date"
-                value={task.dueDate ? null : null}
-                onChange={(date) =>
-                    onTaskChange({ ...task, dueDate: date || "" })
-                }
+                value={task?.dueDate ? dayjs(task.dueDate) : null} 
+                onChange={(date) => {
+                    if (date && date.isValid()) {
+                        onTaskChange({
+                            ...task,
+                            dueDate: date.toDate(),
+                        });
+                    }
+                }}
                 style={{ width: "100%" }}
             />
-        </Modal>
+        </BaseModal>
     );
 };

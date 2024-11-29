@@ -15,7 +15,13 @@ export const Task: React.FC<TaskProps> = ({ task, onToggle, onEdit, onDelete }) 
     return (
         <div className='task-item'>
             <Checkbox checked={task.isDone} onChange={() => onToggle(task.id)}>
-                {task.name}
+                <div>
+                    {task.name}
+                    <br />
+                    {task.description}
+                    <br />
+                    {task.dueDate.toString()}
+                </div>
             </Checkbox>
             <div className='task-item-buttons'>
                 <Button icon={<EditOutlined />} onClick={() => onEdit(task.id)}>

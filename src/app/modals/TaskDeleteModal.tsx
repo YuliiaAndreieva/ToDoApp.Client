@@ -1,10 +1,10 @@
 import React from "react";
-import { Modal } from "antd";
 import { Task as TaskType } from "../../models/task.model";
+import {BaseModal} from "./BaseModal";
 
 interface TaskDeleteModalProps {
     isOpen: boolean;
-    task: TaskType | null;
+    task: TaskType;
     onConfirm: () => void;
     onCancel: () => void;
 }
@@ -16,15 +16,15 @@ export const TaskDeleteModal: React.FC<TaskDeleteModalProps> = ({
         onCancel,
     }) => {
     return (
-        <Modal
+        <BaseModal
             title="Delete Task"
-            open={isOpen}
+            isOpen={isOpen}
             onOk={onConfirm}
             onCancel={onCancel}
             okText="Delete"
-            okButtonProps={{ danger: true }}
+            okType={"danger"}
         >
-            <p>Are you sure you want to delete the task "{task?.name}"?</p>
-        </Modal>
+            <p>Are you sure you want to delete the task {task?.name}?</p>
+        </BaseModal>
     );
 };
