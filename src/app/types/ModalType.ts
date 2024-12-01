@@ -1,1 +1,0 @@
-export type ModalType = "edit" | "create" | "delete" | null;

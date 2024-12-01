@@ -1,39 +1,24 @@
 import {Task} from "../../models/task.model";
+import httpClient from "./httpClient";
 
 const TaskApi = {
-    tasks: [
-        {
-            dueDate: new Date('2024-11-30T16:45:00'),
-            description: 'Test Description',
-            id: 1,
-            isDone: true,
-            name: 'Test Task 1'
-        },
-        {
-            id: 2,
-            name: 'Test Task 2',
-            description: 'Test Description',
-            dueDate: new Date('2024-11-30'),
-            isDone: false
-        },
-    ] as Task[],
-
-    getAllTasks(): Task[] {
-        return this.tasks;
+    getAllTasks: async (): Promise<Task[]> => {
+        const response = await httpClient.get("/UserTask");
+        return response.data;
     },
 
-    addTask(newTask: Task): void {
-        this.tasks.push(newTask);
+    addTask: async (task: Task): Promise<Task> => {
+        const response = await httpClient.post("/UserTask", task);
+        return response.data;
     },
 
-    updateTask(updatedTask: Task): void {
-        this.tasks = this.tasks.map((task) =>
-            task.id === updatedTask.id ? updatedTask : task
-        );
+    updateTask: async (updatedTask: Task): Promise<Task> => {
+        const response = await httpClient.put("/UserTask", updatedTask);
+        return response.data;
     },
 
-    deleteTask(taskId: number): void {
-        this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    deleteTask: async (id: number): Promise<void> => {
+        await httpClient.delete(`/UserTask/${id}`);
     },
 };
 

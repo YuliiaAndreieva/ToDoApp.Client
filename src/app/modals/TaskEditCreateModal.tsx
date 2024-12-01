@@ -3,6 +3,11 @@ import {Input, DatePicker} from "antd";
 import { Task as TaskType } from "../../models/task.model";
 import {BaseModal} from "./BaseModal";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface TaskEditCreateModalProps {
     isOpen: boolean;
@@ -35,31 +40,38 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
                 placeholder="Task Name"
                 value={task.name}
                 onChange={(e) =>
-                    onTaskChange({ ...task, name: e.target.value })
+                    onTaskChange({...task, name: e.target.value})
                 }
-                style={{ marginBottom: "10px" }}
+                style={{marginBottom: "10px"}}
             />
             <Input.TextArea
                 placeholder="Task Description"
                 value={task.description}
                 onChange={(e) =>
-                    onTaskChange({ ...task, description: e.target.value })
+                    onTaskChange({...task, description: e.target.value})
                 }
-                style={{ marginBottom: "10px" }}
+                style={{marginBottom: "10px"}}
             />
             <DatePicker
-                placeholder="Select Due Date"
-                value={task?.dueDate ? dayjs(task.dueDate) : null} 
+                placeholder="Due Date"
+                value={task?.dueDate ? dayjs.utc(task?.dueDate).local() : null}
                 onChange={(date) => {
                     if (date && date.isValid()) {
                         onTaskChange({
                             ...task,
-                            dueDate: date.toDate(),
+                            dueDate: date.toDate()
                         });
                     }
                 }}
-                style={{ width: "100%" }}
+                format="YYYY-MM-DD HH:mm"
+                showTime
+                style={{marginBottom: "10px"}}
             />
+            {/*<DatePicker.RangePicker*/}
+            {/*    placeholder={['Start date', 'End date']}*/}
+            {/*    allowEmpty={[false, true]}*/}
+            {/*/>*/}
         </BaseModal>
+
     );
 };

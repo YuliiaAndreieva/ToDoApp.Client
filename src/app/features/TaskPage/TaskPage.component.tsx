@@ -4,12 +4,15 @@ import {TaskList} from "../TaskList/TaskList.component";
 import {ModalType} from "../../enums/ModalType";
 import {TaskEditCreateModal} from "../../modals/TaskEditCreateModal";
 import {TaskDeleteModal} from "../../modals/TaskDeleteModal";
-import {SaveOutlined} from "@ant-design/icons";
+import {PlusCircleOutlined} from "@ant-design/icons";
 import {Button} from "antd";
 import TaskApi from "../../api/task.api";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 
 export const TaskPageComponent: React.FC = () => {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const queryClient = useQueryClient();
+
+    const { data: tasks = [], isLoading, isError } = useQuery(["tasks"], TaskApi.getAllTasks);
     const [modalType, setModalType] = useState<ModalType | null>(null);
     const [currentTask, setCurrentTask] = useState<Task | null>(null);
 
@@ -17,17 +20,17 @@ export const TaskPageComponent: React.FC = () => {
         console.log("Modal Type Updated:", modalType, "Current Task Updated:", currentTask);
     }, [modalType, currentTask]);
 
-    useEffect(() => {
-        const fetchTasks = () => {
-            try {
-                const fetchedTasks = TaskApi.getAllTasks();
-                setTasks(fetchedTasks);
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
-            }
-        };
-        fetchTasks()
-    }, []);
+    const addTaskMutation = useMutation(TaskApi.addTask, {
+        onSuccess: () => queryClient.invalidateQueries(['tasks']),
+    });
+
+    const updateTaskMutation = useMutation(TaskApi.updateTask, {
+        onSuccess: () => queryClient.invalidateQueries(["tasks"]),
+    });
+
+    const deleteTaskMutation = useMutation(TaskApi.deleteTask, {
+        onSuccess: () => queryClient.invalidateQueries(["tasks"]),
+    });
 
     const openModal = (modalType: ModalType, task?: Task) => {
         setModalType(modalType);
@@ -51,47 +54,44 @@ export const TaskPageComponent: React.FC = () => {
     const saveTask = () => {
         if (currentTask) {
             if (modalType === ModalType.Edit) {
-                TaskApi.updateTask(currentTask);
+                updateTaskMutation.mutate(currentTask)
             } else if (modalType === ModalType.Create) {
-                TaskApi.addTask(currentTask);
+                addTaskMutation.mutate(currentTask);
             }
-            const updatedTasks = TaskApi.getAllTasks();
-            setTasks(updatedTasks);
         }
         closeModal();
     };
 
     const deleteTask = () => {
         if (currentTask) {
-            TaskApi.deleteTask(currentTask.id);
-            const updatedTasks = TaskApi.getAllTasks();
-            setTasks(updatedTasks);
+            deleteTaskMutation.mutate(currentTask.id);
         }
         closeModal();
     };
 
+    if (isLoading) return <div>Loading tasks...</div>;
+    if (isError) return <div>Error loading tasks</div>;
+
     return (
-        <div>
+        <div style={{flex: 1}}>
             <TaskList
-                tasks={tasks}
+                tasks={tasks || []}
                 header={
                     <Button
-                        icon={<SaveOutlined />}
+                        icon={<PlusCircleOutlined/>}
                         onClick={() => openModal(ModalType.Create)}
                     >
                         Create
                     </Button>
                 }
                 onToggle={(id) =>
-                    setTasks((prevTasks) =>
-                        prevTasks.map((task) =>
-                            task.id === id ? { ...task, isDone: !task.isDone } : task
-                        )
-                    )
+                    updateTaskMutation.mutate({
+                        ...tasks.find((task) => task.id === id)!,
+                        isDone: !tasks.find((task) => task.id === id)!.isDone,
+                    })
                 }
                 onEdit={(id) => openModal(ModalType.Edit, tasks.find((task) => task.id === id)!)}
-                onDelete={(id) => openModal(ModalType.Delete, tasks.find((task) => task.id === id)!) }
-
+                onDelete={(id) => openModal(ModalType.Delete, tasks.find((task) => task.id === id)!)}
             />
 
             {modalType === ModalType.Create || ModalType.Edit ? (

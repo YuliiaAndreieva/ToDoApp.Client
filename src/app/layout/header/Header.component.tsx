@@ -3,7 +3,7 @@ import './Header.styles.scss';
 
 const Header: React.FC = () => {
     return (
-        <header className="header">
+        <header>
             <h1>ToDoApp</h1>
         </header>
     );

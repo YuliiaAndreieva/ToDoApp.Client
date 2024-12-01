@@ -3,6 +3,7 @@ import { Checkbox, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Task as TaskType } from "../../../models/task.model";
 import './Task.styles.scss';
+import dayjs from "dayjs";
 
 interface TaskProps {
     task: TaskType;
@@ -13,25 +14,20 @@ interface TaskProps {
 
 export const Task: React.FC<TaskProps> = ({ task, onToggle, onEdit, onDelete }) => {
     return (
-        <div className='task-item'>
-            <Checkbox checked={task.isDone} onChange={() => onToggle(task.id)}>
-                <div>
-                    {task.name}
-                    <br />
-                    {task.description}
-                    <br />
-                    {task.dueDate.toString()}
-                </div>
-            </Checkbox>
+        <>
+            <div className='task-props'>
+                <Checkbox checked={task.isDone} onChange={() => onToggle(task.id)}></Checkbox>
+                {task.name}
+            </div>
             <div className='task-item-buttons'>
-                <Button icon={<EditOutlined />} onClick={() => onEdit(task.id)}>
+                {dayjs.utc(task?.dueDate).local().format("DD MMMM, HH:mm")}
+                <Button icon={<EditOutlined/>} onClick={() => onEdit(task.id)}>
                     Edit
                 </Button>
-                <Button icon={<DeleteOutlined />} onClick={() => onDelete(task.id)} danger>
+                <Button icon={<DeleteOutlined/>} onClick={() => onDelete(task.id)} danger>
                     Delete
                 </Button>
             </div>
-        </div>
+        </>
     );
 };
-;
