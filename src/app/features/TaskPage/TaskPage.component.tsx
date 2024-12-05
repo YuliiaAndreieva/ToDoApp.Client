@@ -39,7 +39,8 @@ export const TaskPageComponent: React.FC = () => {
                 id: 0,
                 name: "",
                 description: "",
-                dueDate: new Date(),
+                startDate: new Date(),
+                endDate: new Date(),
                 status: "Planned"
             });
         } else if (task) {

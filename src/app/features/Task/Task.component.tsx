@@ -54,7 +54,7 @@ export const Task: React.FC<TaskProps> = ({ task, onEdit, onDelete, onStatusChan
                         </div>
                     )}
                 </div>
-                {dayjs.utc(task?.dueDate).local().format("DD MMMM, HH:mm")}
+                {dayjs.utc(task?.endDate).local().format("DD MMMM, HH:mm")}
                 <Button icon={<EditOutlined/>} onClick={() => onEdit(task.id)}>
                     Edit
                 </Button>

@@ -18,20 +18,33 @@ export const descriptionValidator = [
     { min: 3, message: "Description name cannot be less then 3 characters" },
 ];
 
-export const dueDateValidator = [
-    { required: true, message: "Please select a due date" },
+export const statusValidator = [
+    { required: true, message: "Please select a task status" },
+];
+
+export const rangeDateValidator = [
     {
-        validator: (_: RuleObject, value: Dayjs) => {
-            if (!value) {
-                return Promise.reject("Please select a due date");
+        validator: (_: RuleObject, value: [Dayjs, Dayjs]) => {
+            if (!value || !value[0] || !value[1]) {
+                return Promise.reject(new Error("Both Start Date and End Date are required."));
             }
-            if (value.isBefore(startOfWeek) || value.isAfter(endOfWeek)) {
+
+            const [startDate, endDate] = value;
+
+            if (startDate.isAfter(endDate)) {
+                return Promise.reject(new Error("Start Date cannot be after End Date."));
+            }
+
+            if (startDate.isBefore(startOfWeek) || endDate.isAfter(endOfWeek)) {
                 return Promise.reject(
-                    `Please select a date between ${startOfWeek.format(
-                        "YYYY-MM-DD"
-                    )} and ${endOfWeek.format("YYYY-MM-DD")}`
+                    new Error(
+                        `Dates must be between ${startOfWeek.format("YYYY-MM-DD")} and ${endOfWeek.format(
+                            "YYYY-MM-DD"
+                        )}.`
+                    )
                 );
             }
+
             return Promise.resolve();
         },
     },

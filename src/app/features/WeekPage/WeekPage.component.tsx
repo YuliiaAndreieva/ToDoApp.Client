@@ -42,7 +42,7 @@ export const WeekPageComponent: React.FC = () => {
             groupedTasks[day] = [];
         });
         tasks.forEach((task) => {
-            const taskDate = new Date(task.dueDate);
+            const taskDate = new Date(task.endDate);
             if (taskDate >= startOfWeek && taskDate <= endOfWeek) {
                 const dayName = daysOfWeek[taskDate.getDay() === 0 ? 6 : taskDate.getDay() - 1];
                 groupedTasks[dayName].push(task);
@@ -95,7 +95,7 @@ export const WeekPageComponent: React.FC = () => {
             console.log("TARGET DATE", targetDate);
             updateTaskMutation.mutate({
                 ...movingTask,
-                dueDate: targetDate,
+                endDate: targetDate,
             });
         }
     };

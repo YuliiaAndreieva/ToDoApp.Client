@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Input, DatePicker, Select, Form} from "antd";
+import {Input, Select, Form, DatePicker} from "antd";
 import { Task as TaskType } from "../../models/task.model";
 import {BaseModal} from "./BaseModal";
 import dayjs from "dayjs";
@@ -7,10 +7,10 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import {TaskStatus} from "../enums/TaskStatus";
 import {TaskStatusDisplayMap} from "../enums/TaskStatusDisplayMap";
-import {descriptionValidator, dueDateValidator, nameValidator} from "../validators/validators";
+import {descriptionValidator, rangeDateValidator, nameValidator, statusValidator} from "../validators/validators";
 import isoWeek from "dayjs/plugin/isoWeek";
 
-
+const { RangePicker } = DatePicker;
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isoWeek);
@@ -42,7 +42,10 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
             form.setFieldsValue({
                 name: task.name || "",
                 description: task.description || "",
-                dueDate: task.dueDate ? dayjs.utc(task.dueDate).local() : null,
+                dateRange: [
+                    task.startDate ? dayjs.utc(task.startDate).local() : null,
+                    task.endDate ? dayjs.utc(task.endDate).local() : null,
+                ],
                 status: task.status || TaskStatus.Planned,
             });
         }
@@ -55,7 +58,8 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
                 const updatedTask = {
                     ...task,
                     ...values,
-                    dueDate: values.dueDate ?  dayjs.utc(task?.dueDate).local() : null,
+                    endDate: values.dateRange.endDate ?  dayjs.utc(values.dateRange.endDate).local() : null,
+                    startDate: values.dateRange.startDate ?  dayjs.utc(values.dateRange.startDate).local() : null
                 };
                 onSave(updatedTask);
             })
@@ -75,18 +79,14 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
         >
             <Form
                 form={form}
-                initialValues={{
-                    name: task?.name || "",
-                    description: task?.description || "",
-                    dueDate: task?.dueDate ? dayjs.utc(task.dueDate).local() : null,
-                    status: task?.status || TaskStatus.Planned,
-                }}
                 layout="vertical"
                 onValuesChange={(changedValues, allValues) => {
+                    const dateRange = allValues.dateRange || [];
                     onTaskChange({
                         ...task,
                         ...allValues,
-                        dueDate: allValues.dueDate ? allValues.dueDate.toDate() : null,
+                        startDate: dateRange[0] ? dayjs.utc(dateRange[0]).local() : null,
+                        endDate: dateRange[1] ? dayjs.utc(dateRange[1]).local() : null,
                     });
                 }}
             >
@@ -105,23 +105,23 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
                     <Input.TextArea placeholder="Task Description" />
                 </Form.Item>
                 <Form.Item
-                    label="Due Date"
-                    name="dueDate"
-                    rules={dueDateValidator}
+                    label="Date Range"
+                    name="dateRange"
+                    rules={rangeDateValidator}
                 >
-                    <DatePicker
+                    <RangePicker
                         format="YYYY-MM-DD HH:mm"
                         showTime
                         disabledDate={(current) =>
                             current && (current.isBefore(startOfWeekForm) || current.isAfter(endOfWeekForm))
                         }
-                        placeholder="Select Due Date"
+                        placeholder={["Select Start Date", "Select End Date"]}
                     />
                 </Form.Item>
                 <Form.Item
                     label="Task Status"
                     name="status"
-                    rules={[{ required: true, message: "Please select a task status" }]}
+                    rules={statusValidator}
                 >
                     <Select>
                         {Object.values(TaskStatus).map((status) => (
