@@ -2,7 +2,7 @@ import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import {TaskCard} from "../TaskCard/TaskCard";
 import {Task} from "../../../../models/task.model";
-import './DayColumn.styles.scss';
+import './DayColumn.styles.css';
 
 interface DayColumnProps {
     day: string;
@@ -17,7 +17,7 @@ export const DayColumn: React.FC<DayColumnProps> = ({ day, tasks }) => {
             ref={setNodeRef}
             className={"day-column"}
         >
-            <h3 style={{ textAlign: "center" }}>{day}</h3>
+            <h3>{day}</h3>
             {tasks.map((task) => (
                 <TaskCard key={task.id} task={task} />
             ))}

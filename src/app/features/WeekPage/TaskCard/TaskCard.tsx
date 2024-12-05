@@ -1,6 +1,7 @@
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import {Task} from "../../../../models/task.model";
+import "./TaskCard.styles.css";
 
 interface TaskCardProps {
     task: Task;
@@ -13,16 +14,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
 
     const style = {
         transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
-        padding: "10px",
-        margin: "5px 0",
-        borderRadius: "5px",
-        backgroundColor: "#fff",
-        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-        cursor: "grab",
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={"task-card"}
+            {...listeners}
+            {...attributes}
+        >
             {task.name}
         </div>
     );
