@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 50px;
 }
 
 .task-item-buttons {
@@ -14,9 +15,46 @@
 .task-props {
   gap: 10px;
   display: flex;
+  //flex-grow: 1;
   padding-left: 10px;
 }
 
+.status-container {
+  padding: 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.status-container:hover {
+  box-shadow: 0 0 5px rgba(255, 182, 193, 0.8);
+  cursor: pointer;
+}
+
+.status-container.editing {
+  background-color: rgba(255, 182, 193, 0.5);
+  box-shadow: none;
+}
+
+.status-display {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+.status-container.status-planned {
+  background-color: #9ee5f3;
+  color: #000;
+}
+
+.status-container.status-inprogress {
+  background-color: #ffff67;
+  color: #000;
+}
+
+.status-container.status-done {
+  background-color: #b0ffb0;
+  color: #000;
+}
 
 
 

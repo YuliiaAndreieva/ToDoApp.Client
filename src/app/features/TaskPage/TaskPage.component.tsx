@@ -40,7 +40,7 @@ export const TaskPageComponent: React.FC = () => {
                 name: "",
                 description: "",
                 dueDate: new Date(),
-                isDone: false,
+                status: "Planned"
             });
         } else if (task) {
             setCurrentTask(task);
@@ -69,6 +69,13 @@ export const TaskPageComponent: React.FC = () => {
         closeModal();
     };
 
+    const onStatusChange = (id: number, newStatus: string) => {
+        const updatedTask = tasks.find((task) => task.id === id);
+        if (updatedTask) {
+            updateTaskMutation.mutate({ ...updatedTask, status: newStatus });
+        }
+    };
+
     if (isLoading) return <div>Loading tasks...</div>;
     if (isError) return <div>Error loading tasks</div>;
 
@@ -84,14 +91,9 @@ export const TaskPageComponent: React.FC = () => {
                         Create
                     </Button>
                 }
-                onToggle={(id) =>
-                    updateTaskMutation.mutate({
-                        ...tasks.find((task) => task.id === id)!,
-                        isDone: !tasks.find((task) => task.id === id)!.isDone,
-                    })
-                }
                 onEdit={(id) => openModal(ModalType.Edit, tasks.find((task) => task.id === id)!)}
                 onDelete={(id) => openModal(ModalType.Delete, tasks.find((task) => task.id === id)!)}
+                onStatusChange={onStatusChange}
             />
 
             {modalType === ModalType.Create || ModalType.Edit ? (

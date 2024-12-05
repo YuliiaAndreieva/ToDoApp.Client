@@ -3,22 +3,22 @@ import httpClient from "./httpClient";
 
 const TaskApi = {
     getAllTasks: async (): Promise<Task[]> => {
-        const response = await httpClient.get("/UserTask");
+        const response = await httpClient.get("/task");
         return response.data;
     },
 
     addTask: async (task: Task): Promise<Task> => {
-        const response = await httpClient.post("/UserTask", task);
+        const response = await httpClient.post("/task", task);
         return response.data;
     },
 
     updateTask: async (updatedTask: Task): Promise<Task> => {
-        const response = await httpClient.put("/UserTask", updatedTask);
+        const response = await httpClient.put("/task", updatedTask);
         return response.data;
     },
 
     deleteTask: async (id: number): Promise<void> => {
-        await httpClient.delete(`/UserTask/${id}`);
+        await httpClient.delete(`/task/${id}`);
     },
 };
 
