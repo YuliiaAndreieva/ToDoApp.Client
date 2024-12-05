@@ -4,25 +4,3 @@
   gap: 10px;
   margin-top: 10px;
 }
-
-.task-dropzone {
-  min-height: 300px;
-  padding: 10px;
-  background: #e9ecef;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.task-item {
-  padding: 10px;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  cursor: grab;
-}
-
-.task-item:active {
-  cursor: grabbing;
-}
