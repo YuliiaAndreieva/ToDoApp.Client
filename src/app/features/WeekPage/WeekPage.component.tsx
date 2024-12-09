@@ -6,8 +6,8 @@ import './WeekPage.styles.scss';
 import {Task} from "../../../models/task.model";
 import TaskApi from "../../api/task.api";
 import {DayColumn} from "./DayColumn/DayColumn";
-
-import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import {restrictToWindowEdges} from "@dnd-kit/modifiers";
+import {Modal} from "antd";
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -31,20 +31,33 @@ export const WeekPageComponent: React.FC = () => {
         return groupedTasks;
     });
 
+    const getStartOfWeek = (): Date => {
+        const date = new Date();
+        date.setUTCDate(date.getUTCDate() - (date.getUTCDay() === 0 ? 6 : date.getUTCDay() - 1));
+        date.setUTCHours(0, 0, 0, 0); // Початок дня в UTC
+        return date;
+    };
+
+    const getEndOfWeek = (startOfWeek: Date): Date => {
+        const date = new Date(startOfWeek);
+        date.setUTCDate(startOfWeek.getUTCDate() + 6);
+        date.setUTCHours(23, 59, 59, 999); // Кінець дня в UTC
+        return date;
+    };
+
     useEffect(() => {
         if (tasks.length <= 0) {
             return;
         }
-        const startOfWeek = new Date();
-        startOfWeek.setDate(startOfWeek.getDate() - (startOfWeek.getDay() === 0 ? 6 : startOfWeek.getDay() - 1));
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        const startOfWeek = getStartOfWeek();
+        const endOfWeek = getEndOfWeek(startOfWeek);
         const groupedTasks: Record<string, Task[]> = {};
         daysOfWeek.forEach((day) => {
             groupedTasks[day] = [];
         });
         tasks.forEach((task) => {
             const taskDate = new Date(task.endDate);
+
             if (taskDate >= startOfWeek && taskDate <= endOfWeek) {
                 const dayName = daysOfWeek[taskDate.getDay() === 0 ? 6 : taskDate.getDay() - 1];
                 groupedTasks[dayName].push(task);
@@ -56,7 +69,6 @@ export const WeekPageComponent: React.FC = () => {
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
-        console.log(active, over);
         if (!over || active.id === over.id) {
             return;
         }
@@ -72,9 +84,7 @@ export const WeekPageComponent: React.FC = () => {
 
             const movingTask = sourceTasks.find((task) => task.id === active.id)!;
 
-            const startOfWeek = new Date();
-            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
-
+            const startOfWeek = getStartOfWeek();
             const daysMap: Record<string, number> = {
                 Monday: 0,
                 Tuesday: 1,
@@ -88,28 +98,58 @@ export const WeekPageComponent: React.FC = () => {
             const targetDate = new Date(startOfWeek);
             targetDate.setDate(startOfWeek.getDate() + daysMap[targetDay]);
 
-            setTasksByDay({
-                ...tasksByDay,
-                [sourceDay]: sourceTasks.filter((task) => task.id !== active.id),
-                [targetDay]: [...targetTasks, movingTask],
-            });
+            const originalEndDate = new Date(movingTask.endDate);
+            targetDate.setUTCHours(originalEndDate.getHours());
+            targetDate.setUTCMinutes(originalEndDate.getMinutes());
+            targetDate.setUTCSeconds(originalEndDate.getSeconds());
+            targetDate.setUTCMilliseconds(originalEndDate.getMilliseconds());
 
-            console.log("TARGET DATE", targetDate);
-            updateTaskMutation.mutate({
-                ...movingTask,
-                endDate: targetDate,
-            });
+            if (targetDate < new Date(movingTask.startDate)) {
+                Modal.warning({
+                    title: "Invalid Task Date",
+                    content: "End date cannot be earlier than start date.",
+                });
+                return;
+            }
+
+            updateTaskMutation.mutate(
+                {
+                    ...movingTask,
+                    endDate: targetDate,
+                },
+                {
+                    onSuccess: () => {
+                        setTasksByDay({
+                            ...tasksByDay,
+                            [sourceDay]: sourceTasks.filter((task) => task.id !== active.id),
+                            [targetDay]: [...targetTasks, movingTask],
+                        });
+                    },
+                    onError: (error) => {
+                        console.error("Error updating task:", error);
+                        Modal.error({
+                            title: "Error",
+                            content: "Failed to update the task on the server.",
+                        });
+                    },
+                }
+            );
         }
     };
+
 
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error loading tasks</div>;
 
     return (
-        <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
-            <div className={"week-view"}>
+        <DndContext modifiers={[restrictToWindowEdges]} onDragEnd={handleDragEnd}>
+            <div className="week-view">
                 {daysOfWeek.map((day) => (
-                    <SortableContext key={day} items={tasksByDay[day] ?? []} strategy={verticalListSortingStrategy}>
+                    <SortableContext
+                        key={day}
+                        items={tasksByDay[day] ?? []}
+                        strategy={verticalListSortingStrategy}
+                    >
                         <DayColumn key={day} day={day} tasks={tasksByDay[day]} />
                     </SortableContext>
                 ))}

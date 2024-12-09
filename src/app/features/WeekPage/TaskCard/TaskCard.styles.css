@@ -7,3 +7,20 @@
     cursor: grab;
     max-width: 100%;
 }
+
+.task-card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.task-card-footer {
+    font-size: 12px;
+    color: #888;
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 5px;
+    margin-top: 8px;
+}

@@ -1,9 +1,9 @@
 .day-column {
-  flex: 1;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
-  min-height: 500px;
+  min-height: 530px;
+  width: 170px;
   background-color: #f9f9f9;
 }
 

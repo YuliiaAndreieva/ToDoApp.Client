@@ -24,7 +24,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
             {...listeners}
             {...attributes}
         >
-            {task.name}
+            <div className="task-card-content">
+                <div className="task-card-title">{task.name}</div>
+            </div>
+            <div className="task-card-footer">
+                <span>
+                    {new Date(task.startDate).toLocaleDateString()} - {new Date(task.endDate).toLocaleDateString()}
+                </span>
+            </div>
         </div>
     );
 };
