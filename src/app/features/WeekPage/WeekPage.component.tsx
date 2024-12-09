@@ -7,6 +7,8 @@ import {Task} from "../../../models/task.model";
 import TaskApi from "../../api/task.api";
 import {DayColumn} from "./DayColumn/DayColumn";
 
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 
@@ -104,7 +106,7 @@ export const WeekPageComponent: React.FC = () => {
     if (isError) return <div>Error loading tasks</div>;
 
     return (
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
             <div className={"week-view"}>
                 {daysOfWeek.map((day) => (
                     <SortableContext key={day} items={tasksByDay[day] ?? []} strategy={verticalListSortingStrategy}>
