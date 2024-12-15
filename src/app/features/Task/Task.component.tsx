@@ -6,6 +6,9 @@ import './Task.styles.scss';
 import dayjs from "dayjs";
 import {TaskStatus} from "../../enums/TaskStatus";
 import {TaskStatusDisplayMap} from "../../enums/TaskStatusDisplayMap";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 interface TaskProps {
     task: TaskType;

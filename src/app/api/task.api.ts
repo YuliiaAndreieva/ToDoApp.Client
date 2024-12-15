@@ -4,7 +4,7 @@ import httpClient from "./httpClient";
 const TaskApi = {
     getAllTasks: async (): Promise<Task[]> => {
         const response = await httpClient.get("/task");
-        return response.data;
+        return response.data.map((item: { data: Task }) => item.data);
     },
 
     addTask: async (task: Task): Promise<Task> => {

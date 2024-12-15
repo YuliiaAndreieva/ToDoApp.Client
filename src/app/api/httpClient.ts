@@ -5,6 +5,7 @@ const httpClient = axios.create({
     baseURL: "http://localhost:5145/api",
     headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json"
     },
 })
 
