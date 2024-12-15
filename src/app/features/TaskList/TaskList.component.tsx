@@ -21,7 +21,6 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, header, onEdit, onDel
                 dataSource={tasks}
                 renderItem={(task: TaskType) => (
                     <List.Item >
-                        {/*<Task task={task} onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} />*/}
                         <Task task={task} onEdit={onEdit} onDelete={onDelete} onStatusChange={onStatusChange}/>
                     </List.Item>
                 )}

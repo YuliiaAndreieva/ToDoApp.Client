@@ -74,7 +74,7 @@ export const TaskEditCreateModal: React.FC<TaskEditCreateModalProps> = ({
             isOpen={isOpen}
             onOk={handleSave}
             onCancel={onCancel}
-            okText={isEditMode ? "Save Changes" : "Create"}
+            okText={"Save"}
             okType={"primary"}
         >
             <Form

@@ -21,7 +21,7 @@ export const TaskDeleteModal: React.FC<TaskDeleteModalProps> = ({
             isOpen={isOpen}
             onOk={onConfirm}
             onCancel={onCancel}
-            okText="Delete"
+            okText="Confirm"
             okType={"danger"}
         >
             <p>Are you sure you want to delete the task {task?.name}?</p>
