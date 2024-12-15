@@ -39,6 +39,7 @@ export const Task: React.FC<TaskProps> = ({ task, onEdit, onDelete, onStatusChan
                 >
                     {isEditingStatus ? (
                         <Select
+                            data-testid="task-status-select"
                             defaultValue={task.status}
                             onChange={handleStatusChange}
                             style={{width: 150}}
